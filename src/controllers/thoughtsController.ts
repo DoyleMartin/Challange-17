@@ -1,14 +1,11 @@
 import { Request, Response } from 'express';
-import { Course, Student } from '../models/index.js';
+import { Thoughts, reactionSchema } from '../models/index.js';
 
-/**
- * GET All Courses /courses
- * @returns an array of Courses
-*/
-export const getAllCourses = async(_req: Request, res: Response) => {
+
+export const getAllThoughts = async(_req: Request, res: Response) => {
     try {
-        const courses = await Course.find();
-        res.json(courses);
+        const thoughts = await Thoughts.find();
+        res.json(thoughts);
     } catch(error: any){
         res.status(500).json({
             message: error.message
@@ -16,20 +13,15 @@ export const getAllCourses = async(_req: Request, res: Response) => {
     }
 }
 
-/**
- * GET Course based on id /course/:id
- * @param string id
- * @returns a single Course object
-*/
-export const getCourseById = async (req: Request, res: Response) => {
-    const { courseId } = req.params;
+export const getThoughtsById = async (req: Request, res: Response) => {
+    const { thoughtId } = req.params;
     try {
-      const student = await Course.findById(courseId);
-      if(student) {
-        res.json(student);
+      const thoughts = await Thoughts.findById(thoughtId);
+      if(thoughts) {
+        res.json(thoughts);
       } else {
         res.status(404).json({
-          message: 'Volunteer not found'
+          message: 'Thought not found'
         });
       }
     } catch (error: any) {
@@ -39,11 +31,6 @@ export const getCourseById = async (req: Request, res: Response) => {
     }
   };
 
-  /**
- * POST Course /courses
- * @param object username
- * @returns a single Course object
-*/
 export const createCourse = async (req: Request, res: Response) => {
     const { course } = req.body;
     try {
