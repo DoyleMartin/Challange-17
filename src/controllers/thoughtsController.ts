@@ -32,10 +32,10 @@ export const getThoughtsById = async (req: Request, res: Response) => {
   };
 
 export const createThought = async (req: Request, res: Response) => {
-    const { thought, username, userId } = req.body;
+    const { thoughtText, username, userId } = req.body;
     try {
       const newThought = await Thoughts.create({
-        thought, username
+        thoughtText, username
       });
       const updateUser = await User.findByIdAndUpdate(
         userId,
@@ -105,6 +105,10 @@ export const deleteThought = async (req: Request, res: Response) => {
 
 export const addReaction = async (req: Request, res: Response) => {
     try {
+        const { reactionBody, username } = req.body;
+        if (!reactionBody || !username) {
+            return res.status(400).json({ message: 'Reaction body and username are required' });
+        }
         const thought = await Thoughts.findOneAndUpdate(
             { _id: req.params.thoughtId },
             { $addToSet: { reactions: req.body } },
@@ -131,7 +135,7 @@ export const removeReaction = async (req: Request, res: Response) => {
         if (!thought) {
             return res.status(404).json({ message: 'No thought with this id!' });
         }
-        return res.json(thought);
+        return res.json({ message: 'Reaction removed successfully' });
     } catch (error: any) {
         return res.status(500).json({
             message: error.message

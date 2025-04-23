@@ -4,13 +4,13 @@ import { Request, Response } from 'express';
 
 export const headCount = async () => {
     try {
-        const numberOfStudents = await User.aggregate([
-            { $count: "studentCount" }
+        const results = await User.aggregate([
+            { $count: "userCount" }
         ]);
-        return numberOfStudents;
+        return results.length > 0 ? results[0].userCount : 0;
     }
     catch (error) {
-        console.error('Error counting students:', error);
+        console.error('Error counting Users:', error);
         throw error;
     }
 }
@@ -18,15 +18,17 @@ export const headCount = async () => {
 
 export const getAllUsers = async (_req: Request, res: Response) => {
     try {
-        const students = await User.find();
+        const users = await User.find();
 
-        const studentObj = {
-            students,
+        const userObj = {
+            users,
             headCount: await headCount(),
         }
 
-        res.json(studentObj);
+        res.json(userObj);
     } catch (error: any) {
+        console.log(error);
+        
         res.status(500).json({
             message: error.message
         });
@@ -96,12 +98,15 @@ export const updateUser = async (req: Request, res: Response) => {
 export const addFriend = async (req: Request, res: Response) => {
     console.log('You are adding a friend');
     console.log(req.body);
+    const { friendId } = req.body;
     try {
         const user = await User.findOneAndUpdate(
             { _id: req.params.userId },
-            { $addToSet: { friends: req.body } },
+            { $addToSet: { friends: friendId } },
             { runValidators: true, new: true }
         );
+        console.log('userId param:', req.params.userId);
+
 
         if (!user) {
             return res
@@ -116,13 +121,14 @@ export const addFriend = async (req: Request, res: Response) => {
 }
 
 export const removeFriend = async (req: Request, res: Response) => {
+    console.log('userId param:', req.params.userId);
+    console.log('friendId param:', req.params.friendId);
     try {
         const user = await User.findOneAndUpdate(
             { _id: req.params.userId },
-            { $pull: { friends: { userId: req.params.userId } } },
+            { $pull: { friends: req.params.friendId } },
             { runValidators: true, new: true }
         );
-
         if (!user) {
             return res
                 .status(404)

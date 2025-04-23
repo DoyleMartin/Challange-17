@@ -11,15 +11,15 @@ import {
 } from '../../controllers/userController.js';
 
 // /api/users
-router.route('/users').get(getAllUsers).post(createUser);
+router.route('/').get(getAllUsers).post(createUser);
 
 // /api/users/:userId
-router.route('/:studentId').get(getUserById).delete(deleteUser).put(updateUser);
+router.route('/:userId').get(getUserById).delete(deleteUser).put(updateUser);
 
 // /api/users/:userId/friends
-router.route('/:studentId/friends').post(addFriend);
+router.route('/:userId/friends').post(addFriend);
 
 // /api/users/:userId/friends/:friendsId
-router.route('/:studentId/assignments/:assignmentId').delete(removeFriend);
+router.route('/:userId/friends/:friendId').delete(removeFriend);
 
 export { router as userRouter} ;
